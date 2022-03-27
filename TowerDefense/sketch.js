@@ -3,6 +3,9 @@ let enemies = [];
 let path1, path2;
 let health = 400;
 let timer = 3000;
+let enemyHealth = 4;
+let numberMouseClicked = 0;
+
 
 function setup() {
     createCanvas(600, 600, P2D)
@@ -15,16 +18,8 @@ function setup() {
 function draw() {
     background(bg);
     textSize(32);
-    fill("black");
-    text('Start', 10, 235);
     fill("Black");
-    text("Health = " + health, 10, 210)
-
-    if (millis() > 120000){
-        let timer = 1000;
-    } else if(millis() > 60000){
-        let timer = 2000;
-    }
+    text("Health = " + health, 10, 210);
 
     timer -= deltaTime;
     if (timer < 0){
@@ -37,17 +32,32 @@ function draw() {
 
         // reset timer
         timer = 3000;
-    }
+        }
 
     for (i = 0;i < enemies.length; i++){
         enemies[i].display()
         enemies[i].step()
+        if (enemyHealth==0){
+            enemies.splice(enemies.indexOf(Enemy), 1);
+        }
+    }
+
+    //endscreen
+    if(millis() == 10000||health == 0){
+        noLoop();
+        background('endscreen.jpeg');
+    }
+    //increase spawn rate of enemies as time goes on
+    if (millis() > 120000){
+        let timer = 1000;
+    } else if(millis() > 60000){
+        let timer = 2000;
     }
 
 }
 
 class Enemy {
-    constructor(x, y, velX, velY, size = 50, health = 100) {
+    constructor(x, y, velX, velY, size = 48, health = 100) {
         this.x = x;
         this.y = y;
         this.velX = velX;
@@ -60,8 +70,17 @@ class Enemy {
     display() {
         fill("Black")
         circle(this.x, this.y, this.size)
-        fill("Green")
-        rect(this.x - this.size/2, this.y - 40, this.size, 15)
+        //fill("Green")
+        //rect(this.x - this.size/2, this.y - 40, this.size, 15)
+        fill("White")
+        if (mouseIsPressed && dist(mouseX, mouseY, this.x, this.y) <= this.size/4){
+            numberMouseClicked +=1;
+            enemyHealth -= 1;
+            text("10", mouseX, mouseY+20)
+        }
+        if (enemyHealth == 0) {
+            //get rid of the enemy
+        }
     }
 
     step() {
@@ -73,10 +92,6 @@ class Enemy {
         if(this.y > 605 && this.y < 610) {
             health-=1
         }
-    }
-    mouseClicked(){
-        ellipse(mouseX, mouseY, 5, 5);
-
     }
 }
 
