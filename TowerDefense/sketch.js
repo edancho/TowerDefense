@@ -3,7 +3,6 @@ let enemies = [];
 let path1, path2;
 let health = 400;
 let timer = 3000;
-let enemyHealth = 4;
 let numberMouseClicked = 0;
 
 
@@ -37,9 +36,6 @@ function draw() {
     for (i = 0;i < enemies.length; i++){
         enemies[i].display()
         enemies[i].step()
-        if (enemyHealth==0){
-            enemies.splice(enemies.indexOf(Enemy), 1);
-        }
     }
 
     //endscreen
@@ -53,7 +49,14 @@ function draw() {
     } else if(millis() > 60000){
         let timer = 2000;
     }
+    
 
+}
+
+function mousePressed(){
+    for (i=0;i<enemies.length;i++){
+        enemies[i].click();
+    }
 }
 
 class Enemy {
@@ -68,29 +71,28 @@ class Enemy {
 
     //as time increases, spawn the enemies quicker and quicker
     display() {
+        if(this.health <=0) return;
         fill("Black")
         circle(this.x, this.y, this.size)
         //fill("Green")
         //rect(this.x - this.size/2, this.y - 40, this.size, 15)
         fill("White")
-        if (mouseIsPressed && dist(mouseX, mouseY, this.x, this.y) <= this.size/4){
-            numberMouseClicked +=1;
-            enemyHealth -= 1;
-            text("10", mouseX, mouseY+20)
-        }
-        if (enemyHealth == 0) {
-            //get rid of the enemy
-        }
-    }
+    }    
 
     step() {
+        if(this.health <=0) return;
         this.x += this.velX
         this.y += this.velY
-        if (this.x > 605 && this.x < 610) {
-            health-=1
+        if (this.x > width+this.size ||this.y > height+this.size) {
+            health-=10
+            this.health=0
         }
-        if(this.y > 605 && this.y < 610) {
-            health-=1
+    }
+    click(){
+        if (dist(mouseX, mouseY, this.x, this.y) <= this.size/4){
+            this.health -= 10;
+            console.log(this.health)
+            text("10", mouseX, mouseY+20)
         }
     }
 }
